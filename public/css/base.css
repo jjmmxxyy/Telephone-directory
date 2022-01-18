@@ -1,0 +1,68 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+em,
+i {
+    font-style: normal
+}
+
+li {
+    list-style: none
+}
+
+img {
+    border: 0;
+    vertical-align: middle
+}
+
+button {
+    cursor: pointer
+}
+
+a {
+    color: #666;
+    text-decoration: none
+}
+
+li,
+a {
+    user-select: none;
+}
+
+a:hover {
+    color: #4284fb
+}
+
+button,
+input {
+    border: 0;
+    outline: none;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    background-color: #ebeef5;
+    color: #666
+}
+
+.hide,
+.none {
+    display: none
+}
+
+
+/* 清除浮动 */
+
+.clearfix::after {
+    visibility: hidden;
+    clear: both;
+    display: block;
+    content: "";
+    height: 0
+}
+
+.clearfix {
+    *zoom: 1
+}

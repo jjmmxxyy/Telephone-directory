@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电话薄</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/contacts.css">
+</head>
+
+<body>
+    <!-- 头部区域 -->
+    <header>
+        <div class="logo"><a href="http://127.0.0.1:4242/index.html" >logo</a></div>
+        <div class="header-box">
+            <ul>
+                <li><a href="http://127.0.0.1:4242/login.html" title="点击登录"></a></li>
+            </ul>
+        </div>
+    </header>
+    <!-- 导航栏 -->
+    <nav>
+        <ul>
+            <li><a href="http://127.0.0.1:4242/index.html"> 首页</a></li>
+            <li><a href="http://127.0.0.1:4242/contacts.html"> 联系人</a></li>
+            <li><a href="http://127.0.0.1:4242/add.html"> 添加联系人</a></li>
+            <li><a href="http://127.0.0.1:4242/important.html"> 重要联系人</a></li>
+            <li><a href="http://127.0.0.1:4242/info.html"> 管理个人信息</a></li>
+        </ul>
+    </nav>
+    <!-- 主体区域 -->
+    <main>
+        <div class="search">
+            <input type="search" placeholder="搜索联系人姓名" id="inp1">
+            <a href="javascript: onSearch();"></a>
+            <input type="search" placeholder="搜索联系人电话" id="inp2">
+            <a href="javascript: inSearch();"></a>
+        </div>
+        <table cellspacing="0" cellpadding="0">
+            <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>姓名</th>
+                    <th>邮箱</th>
+                    <th>电话</th>
+                    <th>年龄</th>
+                    <th>性别</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="tbd">
+                <!-- <tr>
+                    <td><input type="text" id="slefName" placeholder="填入修改后的信息"></td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td><a href="#">删除联系人</a><a href="#">修改联系人</a><a href="#"></a></td>
+                </tr> -->
+            </tbody>
+        </table>
+        <div class="table-footer">
+            <div class="forter-left">
+                共<span>1</span>条&nbsp;&nbsp;&nbsp;每页最多显示<span>1</span>条&nbsp;&nbsp;&nbsp;共<span>1</span>页&nbsp;&nbsp;&nbsp;当前第<span>1</span>页
+            </div>
+            <div class="forter-right" id="pageFooter">
+            </div>
+        </div>
+    </main>
+    <script>
+        // 获取页面中所有span
+        var span = document.querySelectorAll('span');
+
+        // 修改联系人
+        function setContacts(truid) {
+            var sex = selfGender.value === '男' ? 1 : 0;
+            var data = `uid=${truid}&user_name=${selfName.value}&email=${selfEmail.value}&phone=${selfPhone.value}&age=${selfAge.  value}&gender=${sex}`;
+            var url = `/v1/tel/update`;
+            var xhr = new XMLHttpRequest();
+            xhr.open('put', url);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xhr.onload = function() {
+                var stuts = JSON.parse(xhr.responseText).code;
+                if (stuts === 401) {
+                    alert('邮箱格式错误');
+                } else if (stuts === 403) {
+                    alert('电话号格式错误');
+                } else if (stuts === 405) {
+                    alert('真实姓名格式错误');
+                } else if (stuts === 412) {
+                    alert('电话号或邮箱已存在');
+                } else if (stuts === 500) {
+                    alert('修改失败，没有该联系人');
+                } else {
+                    window.location.href = 'http://127.0.0.1:4242/contacts.html';
+                }
+            }
+            xhr.send(data);
+        }
+
+        // 页面加载事件
+        window.onload = function() {
+            var url = '/v1/tel/find_contact?pageNum=1&pageSize=6';
+            var xhr = new XMLHttpRequest();
+            xhr.open('get', url);
+            xhr.onload = function() {
+                var xhrObj = JSON.parse(xhr.responseText);
+                dataCount = xhrObj.dataCount;
+                msg = xhrObj.msg;
+                pageCount = xhrObj.pageCount;
+                pageNum = xhrObj.pageNum;
+                pageSize = xhrObj.pageSize;
+                // console.log(msg);
+                // console.log(dataCount);
+                var html = '';
+                for (var i = 0; i < msg.length; i++) {
+                    html += `
+                        <tr id="fixtr${i}">
+                            <td>${msg[i].uid}</td>
+                            <td>${msg[i].user_name}</td>
+                            <td>${msg[i].email}</td>
+                            <td>${msg[i].phone}</td>
+                            <td>${msg[i].age}</td>
+                            <td>${msg[i].gender === 1 ? '男' : '女'}</td>
+                            <td><a href="javascript: remove(${msg[i].uid});">删除联系人</a><a href="javascript: update(${i});">修改联系人</a><a href="" onclick="javascript: important(${msg[i].uid} , ${msg[i].islove});" id="aixin${i}"></a></td>
+                        </tr>
+                    `;
+                }
+                tbd.innerHTML = html;
+                // 处理页面数据统计
+                span[0].innerHTML = dataCount;
+                span[1].innerHTML = pageSize;
+                span[2].innerHTML = pageCount;
+                span[3].innerHTML = pageNum;
+                // 处理页脚部分
+                for (var i = 0; i < pageCount; i++) {
+                    pageFooter.innerHTML += `
+                        <a href="javascript: next(${i + 1});">${i + 1}</a>
+                    `;
+                }
+            }
+            xhr.send();
+        }
+
+        // 模糊查询姓名
+        function onSearch() {
+            var url = `/v1/tel/search_contact?user_name=${inp1.value}&pageNum=1&pageSize=20`;
+            var xhr = new XMLHttpRequest();
+            xhr.open('get', url);
+            xhr.onload = function() {
+                var xhrObj = JSON.parse(xhr.responseText);
+                dataCount = xhrObj.dataCount;
+                msg = xhrObj.msg;
+                pageCount = xhrObj.pageCount;
+                pageNum = xhrObj.pageNum;
+                pageSize = xhrObj.pageSize;
+                var html = '';
+                for (var i = 0; i < msg.length; i++) {
+                    html += `
+                        <tr id="fixtr${i}">
+                            <td>${msg[i].uid}</td>
+                            <td>${msg[i].user_name}</td>
+                            <td>${msg[i].email}</td>
+                            <td>${msg[i].phone}</td>
+                            <td>${msg[i].age}</td>
+                            <td>${msg[i].gender === 1 ? '男' : '女'}</td>
+                            <td><a href="javascript: remove(${msg[i].uid});">删除联系人</a><a href="javascript: update(${i});">修改联系人</a><a href="javascript: important(${msg[i].uid} , ${msg[i].islove});"></a></td>
+                        </tr>
+                    `;
+                }
+                tbd.innerHTML = html;
+                // 处理页面数据统计
+                span[0].innerHTML = dataCount;
+                span[1].innerHTML = pageSize;
+                span[2].innerHTML = pageCount;
+                span[3].innerHTML = pageNum;
+                pageFooter.innerHTML = '';
+                // for (var i = 0 ; i < pageCount ; i++) {
+                //     pageFooter.innerHTML += `
+                //         <a href="javascript: next(${i + 1});">${i + 1}</a>
+                //     `;
+                // }
+            }
+            xhr.send();
+        }
+
+        // 模糊查询电话
+        function inSearch() {
+            var url = `/v1/tel/search_contact?phone=${inp2.value}&pageNum=1&pageSize=20`;
+            var xhr = new XMLHttpRequest();
+            xhr.open('get', url);
+            xhr.onload = function() {
+                var xhrObj = JSON.parse(xhr.responseText);
+                dataCount = xhrObj.dataCount;
+                msg = xhrObj.msg;
+                pageCount = xhrObj.pageCount;
+                pageNum = xhrObj.pageNum;
+                pageSize = xhrObj.pageSize;
+                var html = '';
+                for (var i = 0; i < msg.length; i++) {
+                    html += `
+                    <tr id="fixtr${i}">
+                        <td>${msg[i].uid}</td>
+                        <td>${msg[i].user_name}</td>
+                        <td>${msg[i].email}</td>
+                        <td>${msg[i].phone}</td>
+                        <td>${msg[i].age}</td>
+                        <td>${msg[i].gender === 1 ? '男' : '女'}</td>
+                        <td><a href="javascript: remove(${msg[i].uid});">删除联系人</a><a href="javascript: update(${i});">修改联人</a><a href="javascript: important(${msg[i].uid} , ${msg[i].islove});"></a></td>
+                    </tr>
+                    `;
+                }
+                tbd.innerHTML = html;
+                // 处理页面数据统计
+                span[0].innerHTML = dataCount;
+                span[1].innerHTML = pageSize;
+                span[2].innerHTML = pageCount;
+                span[3].innerHTML = pageNum;
+                pageFooter.innerHTML = '';
+                // for (var i = 0 ; i < pageCount ; i++) {
+                //     pageFooter.innerHTML += `
+                //         <a href="javascript: next(${i + 1});">${i + 1}</a>
+                //     `;
+                // }
+            }
+            xhr.send();
+        }
+
+        // 点击页码
+        function next(pageClick) {
+            var url = `/v1/tel/find_contact?pageNum=${pageClick}&pageSize=6`;
+            var xhr = new XMLHttpRequest();
+            xhr.open('get', url);
+            xhr.onload = function() {
+                var xhrObj = JSON.parse(xhr.responseText);
+                dataCount = xhrObj.dataCount;
+                msg = xhrObj.msg;
+                pageCount = xhrObj.pageCount;
+                pageNum = xhrObj.pageNum;
+                pageSize = xhrObj.pageSize;
+                // console.log(msg);
+                // console.log(dataCount);
+                var html = '';
+                for (var i = 0; i < msg.length; i++) {
+                    html += `
+                        <tr id="fixtr${i}">
+                            <td>${msg[i].uid}</td>
+                            <td>${msg[i].user_name}</td>
+                            <td>${msg[i].email}</td>
+                            <td>${msg[i].phone}</td>
+                            <td>${msg[i].age}</td>
+                            <td>${msg[i].gender === 1 ? '男' : '女'}</td>
+                            <td><a href="javascript: remove(${msg[i].uid});">删除联系人</a><a href="javascript: update(${i});">修改联系人</a><a href="javascript: important(${msg[i].uid} , ${msg[i].islove});"></a></td>
+                        </tr>
+                    `;
+                }
+                tbd.innerHTML = html;
+                // 处理页面数据统计
+                span[3].innerHTML = pageNum;
+            }
+            xhr.send();
+        }
+
+        // 点击删除按钮
+        function remove(uid) {
+            console.log(uid);
+            var data = `uid=${uid}`;
+            var url = '/v1/tel/delete';
+            var xhr = new XMLHttpRequest();
+            xhr.open('delete', url);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xhr.onload = function() {
+                window.location.href = 'http://127.0.0.1:4242/contacts.html';
+            }
+            xhr.send(data);
+        }
+
+        // 点击添加重要联系人按钮
+        function important(uid, flag ) {
+            // console.log(uid , Number(!flag));
+            var data = `uid=${uid}&islove=${Number(!flag)}`;
+            var url = '/v1/tel/ope_important';
+            var xhr = new XMLHttpRequest();
+            xhr.open('post', url);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xhr.onload = function() {
+            }
+            xhr.send(data);
+        }
+
+
+        // 点击修改联系人触发事件
+        function update(n) {
+            var fixtr = document.getElementById('fixtr' + n);
+            var fixuid = fixtr.childNodes[1].innerHTML;
+            // console.log(fixuid);
+            var html = '';
+            html += `
+                <td>${fixuid}</td>
+                <td><input type="text" id="selfName" placeholder="填入修改后的信息" value></td>
+                <td><input type="text" id="selfEmail" placeholder="填入修改后的信息"></td>
+                <td><input type="text" id="selfPhone" placeholder="填入修改后的信息"></td>
+                <td><input type="text" id="selfAge" placeholder="填入修改后的信息"></td>
+                <td><input type="text" id="selfGender" placeholder="填入修改后的信息"></td>
+                <td><a href="javascript: setContacts(${fixuid});">修改完成</a></td>
+            `;
+            fixtr.innerHTML = html;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,81 @@
+@font-face {
+    font-family: 'icomoon';
+    src: url('../fonts/icomoon.eot?v031cm');
+    src: url('../fonts/icomoon.eot?v031cm#iefix') format('embedded-opentype'), url('../fonts/icomoon.ttf?v031cm') format('truetype'), url('../fonts/icomoon.woff?v031cm') format('woff'), url('../fonts/icomoon.svg?v031cm#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+
+.love {
+    color: #EB2303;
+}
+.normal {
+    color: #666;
+}
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background-color: #fff;
+    box-shadow: 3px 4px 6px #ccc;
+    z-index: 1;
+}
+
+header .logo a {
+    float: left;
+    margin: 10px 40px;
+    font-size: 40px;
+    color: #4284fb;
+    font-weight: 700;
+}
+
+header .header-box {
+    float: right;
+}
+
+header .header-box li {
+    float: left;
+    width: 98px;
+    height: 80px;
+    border-left: 2px solid #ebeef5;
+    font-family: 'icomoon';
+    font-size: 30px;
+    text-align: center;
+    line-height: 80px;
+}
+
+nav {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    width: 250px;
+    height: 900px;
+    background-color: #3b3b3b;
+    z-index: 2;
+}
+
+nav li a {
+    display: block;
+    height: 70px;
+    padding-left: 20px;
+    font-family: 'icomoon';
+    font-size: 18px;
+    line-height: 70px;
+    color: #fff;
+    transition: all .2s linear;
+}
+nav li a.active {
+    padding-left: 24px;
+    border-left: 4px solid #4284fb;
+    background-color: #fff;
+    opacity: 0.9;
+}
+nav li a:hover {
+    padding-left: 24px;
+    border-left: 4px solid #4284fb;
+    background-color: #fff;
+    opacity: 0.9;
+}

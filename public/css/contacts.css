@@ -1,0 +1,92 @@
+main {
+    float: right;
+    width: 1560px;
+    margin: 110px 30px 0 280px;
+    padding: 20px;
+    background-color: #fff;
+}
+
+main table {
+    width: 100%;
+}
+
+main table tr th {
+    background-color: #ebeef5;
+}
+
+main table tr th,
+main table tr td {
+    margin: 0;
+    height: 60px;
+    border-bottom: 1px solid #ebeef5;
+    padding-left: 20px;
+    text-align: left;
+}
+main table tr td {
+    width: 13%;
+}
+main table tr td:last-child {
+    width: 22%;
+}
+main table tr td a {
+    font-family: 'icomoon';
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+    background-color: #ebeef5;
+    border-radius: 10px;
+}
+main table tr td a:last-child:hover {
+    color: #EB2303;
+}
+main .search {
+    margin-bottom: 20px;
+}
+main .search input{
+    width: 260px;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-right: 0px;
+    padding-left: 10px;
+    font-size: 16px;
+    line-height: 40px;
+}
+main .search a {
+    display: inline-block;
+    width: 40px;
+    height: 38px;
+    margin-left: -6px;
+    margin-right: 60px;
+    border: 1px solid #ccc;
+    border-left: 0;
+    font-family: 'icomoon';
+    text-align: center;
+    line-height: 35px;
+}
+
+
+main .table-footer {
+    width: 1560px;
+    height: 40px;
+    margin-top: 10px;
+}
+main .table-footer .forter-left {
+    float: left;
+}
+main .table-footer .forter-left {
+    font-size: 14px;
+    line-height: 40px;
+}
+main .table-footer .forter-left span {
+    margin: 0 4px;
+}
+main .table-footer .forter-right {
+    float: right;
+}
+main .table-footer .forter-right a {
+    margin-left: 6px;
+    padding: 6px;
+    border: 1px solid #ccc;
+    background-color: #ebeef5;
+    line-height: 40px;
+}

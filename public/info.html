@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电话薄</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/info.css">
+</head>
+
+<body>
+    <!-- 头部区域 -->
+    <header>
+        <div class="logo"><a href="http://127.0.0.1:4242/index.html" >logo</a></div>
+        <div class="header-box">
+            <ul>
+                <li><a href="http://127.0.0.1:4242/login.html" title="点击登录"></a></li>
+                <li><a href="javascript: drop();" title="点击注销该用户"></a></li>
+            </ul>
+        </div>
+    </header>
+    <!-- 导航栏 -->
+    <nav>
+        <ul>
+            <li><a href="http://127.0.0.1:4242/index.html"> 首页</a></li>
+            <li><a href="http://127.0.0.1:4242/contacts.html"> 联系人</a></li>
+            <li><a href="http://127.0.0.1:4242/add.html"> 添加联系人</a></li>
+            <li><a href="http://127.0.0.1:4242/important.html"> 重要联系人</a></li>
+            <li><a href="http://127.0.0.1:4242/info.html"> 管理个人信息</a></li>
+        </ul>
+    </nav>
+    <!-- 主体区域 -->
+    <main>
+        <input type="none" style="display: none;" id="invisible">
+        <div class="info">
+            <h3> 管理个人信息</h3>
+            <ul>
+                <li>
+                    <p id="unamep">旧用户名</p>
+                    <input type="text" id="uname" placeholder="请填写您需操作的用户名">
+                </li>
+                <li>
+                    <p id="unamepNew">新用户名</p>
+                    <input type="text" id="unameNew" placeholder="新用户名">
+                </li>
+                <li>
+                    <p id="upwdp">密码</p>
+                    <input type="password" id="upwd" placeholder="密码">
+                </li>
+                <li>
+                    <p id="emailp">邮箱</p>
+                    <input type="text" id="email" placeholder="邮箱">
+                </li>
+                <li>
+                    <p id="phonep">手机</p>
+                    <input type="text" id="phone" placeholder="手机">
+                </li>
+                <li>
+                    <p id="agep">年龄</p>
+                    <input type="text" id="age" placeholder="年龄">
+                </li>
+                <li>
+                    <p id="user_namep">真实姓名</p>
+                    <input type="text" id="user_name" placeholder="真实姓名">
+                </li>
+                <li>
+                    <p>性别</p>
+                    <input type="radio" name="gender" id="gender" value="1"> 男
+                    <input type="radio" name="gender" id="gender" value="0"> 女
+                </li>
+            </ul>
+            <a href="javascript: modify();" class="fix-btn">修改</a>
+        </div>
+        </div>
+    </main>
+    <script>
+        // 旧用户名用户名输入框失去焦点
+        uname.onblur = function() {
+            var data = `uname=${uname.value}`;
+            var url = '/v1/user/check_uid';
+            var xhr = new XMLHttpRequest();
+            xhr.open('post', url);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xhr.onload = function() {
+                var xhrObj = JSON.parse(xhr.responseText);
+                if (xhrObj.code === 400) {
+                    unamep.innerHTML = '旧用户名 <span class="err">该用户名不存在，请输入正确的用户名</span>';
+                } else {
+                    invisible.value = xhrObj.thisId;
+                    unamep.innerHTML = '旧用户名 <span class="right">用户名输入正确</span>';
+                }
+            }
+            xhr.send(data);
+        }
+
+        // 新用户名用户名输入框失去焦点
+        unameNew.onblur = function() {
+            var data = `uname=${unameNew.value}`;
+            var url = '/v1/user/check_uname';
+            var xhr = new XMLHttpRequest();
+            xhr.open('post', url);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xhr.onload = function() {
+                var status = JSON.parse(xhr.responseText).code;
+                if (status === 400) {
+                    unamepNew.innerHTML = '新用户名 <span class="err">用户名不能为空</span>';
+                } else if (status === 401) {
+                    unamepNew.innerHTML = '新用户名 <span class="err">用户名格式错误</span>';
+                } else if (status === 412) {
+                    unamepNew.innerHTML = '新用户名 <span class="err">该用户名已存在</span>';
+                } else {
+                    unamepNew.innerHTML = '新用户名 <span class="right">格式正确</span>';
+                }
+            }
+            xhr.send(data);
+        }
+
+        // 密码输入框失去焦点
+        upwd.onblur = function() {
+            var data = `upwd=${upwd.value}`;
+            var url = '/v1/user/check_upwd';
+            var xhr = new XMLHttpRequest();
+            xhr.open('post', url);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xhr.onload = function() {
+                var status = JSON.parse(xhr.responseText).code;
+                // console.log(status);
+                if (status === 400) {
+                    upwdp.innerHTML = '密码&nbsp;&nbsp;&nbsp; <span class="err">密码不能为空</span>';
+                } else if (status === 401) {
+                    upwdp.innerHTML = '密码&nbsp;&nbsp;&nbsp; <span class="err">密码格式为6-16位的数字和字母</span>';
+                } else {
+                    upwdp.innerHTML = '密码&nbsp;&nbsp;&nbsp; <span class="right">格式正确</span>';
+                }
+            }
+            xhr.send(data);
+        }
+
+        // 邮箱输入框失去焦点
+        email.onblur = function() {
+            var data = `email=${email.value}`;
+            var url = '/v1/user/check_email';
+            var xhr = new XMLHttpRequest();
+            xhr.open('post', url);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xhr.onload = function() {
+                var status = JSON.parse(xhr.responseText).code;
+                if (status === 400) {
+                    emailp.innerHTML = '邮箱&nbsp;&nbsp;&nbsp; <span class="err">邮箱地址不能为空</span>';
+                } else if (status === 401) {
+                    emailp.innerHTML = '邮箱&nbsp;&nbsp;&nbsp; <span class="err">邮箱格式错误</span>';
+                } else if (status === 412) {
+                    emailp.innerHTML = '邮箱&nbsp;&nbsp;&nbsp; <span class="err">该邮箱已存在</span>';
+                } else {
+                    emailp.innerHTML = '邮箱&nbsp;&nbsp;&nbsp; <span class="right">格式正确</span>';
+                }
+            }
+            xhr.send(data);
+        }
+
+        // 手机输入框失去焦点
+        phone.onblur = function() {
+            var data = `phone=${phone.value}`;
+            var url = '/v1/user/check_phone';
+            var xhr = new XMLHttpRequest();
+            xhr.open('post', url);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xhr.onload = function() {
+                var status = JSON.parse(xhr.responseText).code;
+                if (status === 400) {
+                    phonep.innerHTML = '手机&nbsp;&nbsp;&nbsp; <span class="err">手机号码不能为空</span>';
+                } else if (status === 401) {
+                    phonep.innerHTML = '手机&nbsp;&nbsp;&nbsp; <span class="err">手机号格式错误</span>';
+                } else if (status === 412) {
+                    phonep.innerHTML = '手机&nbsp;&nbsp;&nbsp; <span class="err">该手机号已存在</span>';
+                } else {
+                    phonep.innerHTML = '手机&nbsp;&nbsp;&nbsp; <span class="right">格式正确</span>';
+                }
+            }
+            xhr.send(data);
+        }
+
+        // 年龄输入框失去焦点
+        age.onblur = function() {
+            var data = `age=${age.value}`;
+            var url = '/v1/user/check_age';
+            var xhr = new XMLHttpRequest();
+            xhr.open('post', url);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xhr.onload = function() {
+                var status = JSON.parse(xhr.responseText).code;
+                if (status === 400) {
+                    agep.innerHTML = '年龄&nbsp;&nbsp;&nbsp; <span class="err">年龄不能为空</span>';
+                } else {
+                    agep.innerHTML = '年龄&nbsp;&nbsp;&nbsp; <span class="right">格式正确</span>';
+                }
+            }
+            xhr.send(data);
+        }
+
+        // 真实姓名输入框失去焦点
+        user_name.onblur = function() {
+            var data = `user_name=${user_name.value}`;
+            var url = '/v1/user/check_user_name';
+            var xhr = new XMLHttpRequest();
+            xhr.open('post', url);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xhr.onload = function() {
+                var status = JSON.parse(xhr.responseText).code;
+                if (status === 400) {
+                    user_namep.innerHTML = '真实姓名&nbsp;&nbsp;&nbsp; <span class="err">真实姓名不能为空</span>';
+                } else if (status === 401) {
+                    user_namep.innerHTML = '真实姓名&nbsp;&nbsp;&nbsp; <span class="err">真实姓名格式错误</span>';
+                } else {
+                    user_namep.innerHTML = '真实姓名&nbsp;&nbsp;&nbsp; <span class="right">格式正确</span>';
+                }
+            }
+            xhr.send(data);
+        }
+
+        // 点击修改
+        function modify() {
+            for (var i = 0; i < gender.length; i++) {
+                if (gender[i].checked) {
+                    var sex = gender[i].value;
+                }
+            }
+            var data = `uid=${invisible.value}&uname=${unameNew.value}&upwd=${upwd.value}&email=${email.value}&phone=${phone.value}&age=${age.value}&user_name=${user_name.value}&gender=${sex}`;
+            var url = '/v1/user/info';
+            var xhr = new XMLHttpRequest();
+            xhr.open('put', url);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xhr.onload = function() {
+                var status = JSON.parse(xhr.responseText).code;
+                if (status === 200) {
+                    window.location.href = 'http://127.0.0.1:4242/login.html';
+                } else {
+                    alert('请输入正确数据格式');
+                }
+            }
+            xhr.send(data);
+        }
+
+        // 点击用户注销按钮
+        function drop() {
+            var data = `uid=${invisible.value}`;
+            var url = '/v1/user/delete';
+            var xhr = new XMLHttpRequest();
+            xhr.open('delete', url);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xhr.onload = function() {
+                var status = JSON.parse(xhr.responseText).code;
+                if (status === 500) {
+                    alert('注销失败，请填入有效数据');
+                } else {
+                    alert('您确定要注销此用户吗？');
+                    window.location.href = 'http://127.0.0.1:4242/login.html';
+                }
+            }
+            xhr.send(data);
+        }
+    </script>
+</body>
+
+</html>
